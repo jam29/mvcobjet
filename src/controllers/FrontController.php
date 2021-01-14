@@ -82,7 +82,16 @@ class FrontController
     }
 
     public function movie($id) {
-        $movie = $this->movieService->getById($id);
-        echo $this->twig->render('movie.html.twig', ["movie" => $movie ]);   
+       $movie = $this->movieService->getById($id);
+       echo "<pre>";
+       print_r($movie->getActors());
+       echo "</pre>";
+       die();
+       /*
+        ['movie' => $movie, 'actors' => $actors] = $this->movieService->getFullMovie($id);
+        echo $this->twig->render('movie.html.twig', ["movie" => $movie,"actors" => $actors ]); 
+        */
+       
+        echo $this->twig->render('movie.html.twig', ["movie" => $movie ]); 
     }
 }

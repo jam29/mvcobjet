@@ -21,6 +21,24 @@ class ActorDao extends BaseDao
         }
     }
 
+    public function findByMovie($movieId)
+    {
+        $stmt = $this->db->prepare("
+            SELECT id, first_name as firstName, last_name as lastName
+            FROM actor
+            INNER JOIN movies_actors ON movies_actors.actor_id = actor.id          
+            WHERE movie_id = :movieId
+        ");
+
+        $res = $stmt->execute([':movieId' => $movieId]);
+
+        if ($res) {
+            return $stmt->fetchAll(\PDO::FETCH_CLASS, Actor::class);
+        } else {
+            throw new \PDOException($stmt->errorInfo()[2]);
+        }
+    }
+
     public function createObjectFromFields($fields)
     {
         $acteur = new actor();
@@ -30,8 +48,4 @@ class ActorDao extends BaseDao
 
         return $acteur;
     }
-
-
-
-
 }

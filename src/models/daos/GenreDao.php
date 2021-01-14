@@ -26,7 +26,8 @@ class GenreDao extends BaseDao
         $stmt = $this->db->prepare("SELECT * FROM genre WHERE id = :id");
         $res = $stmt->execute([':id' => $id]);
 
-        if($res){
+        if($res) {
+           
             return $stmt->fetchObject(Genre::class); 
             // Genre::class équivalent à mvcobjet\Models\Entities\Genre
             // fetchObject lit une ligne à la fois et la retourne comme un objet
@@ -36,11 +37,29 @@ class GenreDao extends BaseDao
         }
     }
 
+    public function findByMovie($movieId)
+    {
+        $stmt = $this->db->prepare("
+            SELECT genre.id, genre.name
+            FROM genre
+            INNER JOIN movie ON movie.genre_id = genre.id
+            WHERE movie.id = :movieId
+        ");
+
+        $res = $stmt->execute([':movieId' => $movieId]);
+
+        if ($res) {
+            return $stmt->fetchObject(Genre::class);
+        } else {
+            throw new \PDOException($stmt->errorInfo()[2]);
+        }
+    }
+
     public function createObjectFromFields($fields): genre
     {
         //
-        // liaison entre la donnée BDD et l'objet 
-        // ici on voit le chainage ->setId->setName 
+        // liaison entre la donnée BDD et l'objet
+        // ici on voit le chainage ->setId->setName
         //
         $genre = new genre();
         $genre->setId($fields['id'])

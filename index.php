@@ -3,6 +3,7 @@
 require_once "vendor/autoload.php";
 
 use mvcobjet\controllers\FrontController; 
+use mvcobjet\controllers\BackController; 
 
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
@@ -17,6 +18,7 @@ $twig = new Environment($loader, ['cache' => false,'debug' => true]);
 // use MvcObjet\Controllers\FrontController as FrontController
 
 $fc = new FrontController($twig);
+$bc = new BackController();
 
 // pour klein redirection .htaccess
 /*-------------------------------------
@@ -34,40 +36,30 @@ if(ltrim($base, '/')){
     $_SERVER['REQUEST_URI'] = substr($_SERVER['REQUEST_URI'], strlen($base));
 }
 
-$klein = new \Klein\Klein();
+$route = new \Klein\Klein();
 
-$klein->respond('GET','/genres', function() use($fc) {
+$route->respond('GET','/genres', function() use($fc) {
     // use est une manière d'effectuer une closure en PHP 
    $fc->genres(); //appel de la fonction genres du controleur
 });
 
-$klein->respond('GET','/acteurs', function() use($fc) {
+$route->respond('GET','/acteurs', function() use($fc) {
    $fc->acteurs(); 
 });
 
-$klein->respond('GET','/realisateurs', function() use($fc) {
+$route->respond('GET','/realisateurs', function() use($fc) {
    $fc->realisateurs(); 
 });
 
-$klein->respond('GET','/movie/[:id]', function($request) use($fc) {
+$route->respond('GET','/movie/[:id]', function($request) use($fc) {
    $fc->movie($request->id); 
 });
 
-
-
-/*
-$klein->respond('GET', '/acteurs/[:id]', function ($request) use ($fc) {
-    $frontController->getOneActeur($request->id);
+$route->respond('POST','/addmovie', function($request,$post) use($bc) {
+   $bc->addMovie($request->paramsPost());
 });
-*/
 
-/*
-$klein->respond('POST','/addMovie', function() use($bc) {
-    // use est une manière d'effectuer une closure en PHP 
-   $fc->acteurs(); //appel de la fonction genres du controleur
-});
-*/
 
-$klein->dispatch(); 
+$route->dispatch(); 
 
 ?>
